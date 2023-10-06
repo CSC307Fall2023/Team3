@@ -36,7 +36,13 @@ export default function ToDos() {
     }
 
     function removeTodo({ index }) {
-        setTodos(todos.filter((v,idx) => idx!==index));
+        const todoToRemove = todos[index];
+        fetch(`/api/todos/${todoToRemove.id}`, {method: 'delete'}).then((response) => {
+            return response.json().then(() => {
+                setTodos(todos.filter((v,idx) => idx!==index));
+            });
+        });
+        
     }
 
     useEffect(() => {
@@ -48,15 +54,22 @@ export default function ToDos() {
         );
     }, []);
 
+
+    async function toggleTodo({index}){
+
+    }
+
     const loadingItems = <CircularProgress/>;
 
     const toDoItems = isLoading ? loadingItems : todos.map((todo, idx) => {
         return <ListItem key={idx} secondaryAction={
-            <IconButton edge="end" onClick={() => removeTodo({index: idx})}><DeleteForever/></IconButton>   
+            <IconButton edge="end" onClick={(event) => removeTodo(event, idx)}><DeleteForever/></IconButton>   
         }>  
             <ListItemButton>
                 <ListItemIcon>
-                    <Checkbox checked={todo.done} disableRipple/>
+                <Checkbox checked={todo.done} 
+                    onChange={() => toggleTodo({ index: idx })}
+                    disableRipple/>
                 </ListItemIcon>
                 <ListItemText primary={todo.value}/>
             </ListItemButton>
