@@ -4,8 +4,8 @@ GET http://localhost:3000/api/auth/csrf HTTP/1.1
 
 ######
 @token = {{csrf.response.body.csrfToken}}
-@email = test@test7.com
-@password = test
+@email = dyi03@calpoly.edu
+@password = 1234
 
 POST http://localhost:3000/api/auth/callback/normal HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
