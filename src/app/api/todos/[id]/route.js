@@ -26,22 +26,17 @@ export async function PUT(request, { params }) {
    return NextResponse.json({error: 'not signed in'}, {status: 403});
 }
 
-export async function COMPLETE(request, { params }) {
+export async function DELETE(request, { params }) {
   const loggedInData = await checkLoggedIn();
   const id = +params.id;
   if (loggedInData.loggedIn && id) {
-    const updatedTodo = await prisma.toDo.update({
+    const todo = await prisma.toDo.delete({
       where: {
         id,
         ownerId: loggedInData.user?.id
-      },
-      data: {
-        done: true
       }
     });
-
-    return NextResponse.json({ updated: updatedTodo });
+    return NextResponse.json({ deleted: todo });
   }
-
-  return NextResponse.json({ error: 'Not signed in or invalid ID' }, { status: 403 });
+  return NextResponse.json({error: 'not signed in'}, {status: 403});
 }
