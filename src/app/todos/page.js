@@ -21,7 +21,7 @@ export default function ToDos() {
 
     function inputChangeHandler(e) {
         const todoToComplete = e;
-        fetch('/api/todos/${todoToComplete.id}', {method: "complete"});
+        fetch(`/api/todos/${todoToComplete.id}`, {method: "complete"});
         setNewTodo(e.target.value);
     }
 
@@ -39,7 +39,7 @@ export default function ToDos() {
 
     function removeTodo({ index }) {
         const todoToRemove = todos[index];
-        fetch('/api/todos/${todoToRemove.id}', {method: "delete"});
+        fetch(`/api/todos/${todoToRemove.id}`, {method: "delete"});
         setTodos(todos.filter((v,idx) => idx!==index));
     }
 
