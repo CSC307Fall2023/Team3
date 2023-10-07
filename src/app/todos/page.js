@@ -55,8 +55,26 @@ export default function ToDos() {
     }, []);
 
 
-    async function toggleTodo({index}){
-
+    async function toggleTodo({ index }) {
+        const todoToUpdate = todos[index];
+        fetch(`/api/todos/${todoToUpdate.id}`, {
+        method: "put",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            value: todoToUpdate.value,
+            done: !todoToUpdate.done,
+        }),
+        }).then((response) => {
+        if (response.ok) {
+            setTodos(
+            todos.map((todo, idx) =>
+                idx === index ? { ...todo, done: !todo.done } : todo
+            )
+            );
+        }
+        });
     }
 
     const loadingItems = <CircularProgress/>;
