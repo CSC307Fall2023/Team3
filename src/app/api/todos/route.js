@@ -33,3 +33,19 @@ export async function POST(request) {
   return NextResponse.json({error: 'not signed in'}, {status: 403});
 }
 
+export async function PATCH(request) {
+  const loggedInData = await checkLoggedIn();
+  if (loggedInData.loggedIn) {
+    const { idx, isDone } = await request.json();
+    const updateTodo = await prisma.toDo.update({
+      where: {
+        id: idx
+      }, 
+      data: {
+        done: isDone
+      }, 
+    });
+    return NextResponse.json(isDone);
+  }
+  return NextResponse.json({error: 'not signed in'}, {status: 403});
+}
