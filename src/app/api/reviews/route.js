@@ -3,7 +3,7 @@ import prisma from "@/lib/db";
 import { checkLoggedIn } from "@/lib/auth";
 
 
-// gets reviews by the user
+// gets reviews by the logged-in user
 // optional fields: placeId, seasonName
 export async function GET(request) {
   const loggedInData = await checkLoggedIn();
@@ -20,14 +20,13 @@ export async function GET(request) {
     return NextResponse.json({error: error}, {status: 500}, {data: request});
   }
 
-  // // get optional fields from data
-  // const placeId = Object.hasOwn(data, "placeId") ? data.placeId : null;
-  // const seasonName = Object.hasOwn(data, "seasonName") ? data.seasonName : null;
-  const {placeId, seasonName} = data;
+  // get optional fields from data
+  const placeId = Object.hasOwn(data, "placeId") ? data.placeId : null;
+  const seasonName = Object.hasOwn(data, "seasonName") ? data.seasonName : null;
   // convert to ids
   const listingId = getListingId(placeId);
   const seasonId = getSeasonId(seasonName);
-  
+
   const reviews = await prisma.review.findMany({
     where: {
       ownerId: {
@@ -108,7 +107,6 @@ async function getSeasonId(seasonName) {
 
 
 // request should have placeId, latitude, longitude, seasonName, and score
-// (seasonName can be the Season's name or id)
 export async function POST(request) {
   const loggedInData = await checkLoggedIn();
   if (!loggedInData.loggedIn) {
@@ -129,9 +127,9 @@ export async function POST(request) {
       || !Object.hasOwn(data, "seasonName") || !Object.hasOwn(data, "score")) {
     return NextResponse.json({status: 400}, {data: request});
   }
-  const placeId = data.placeId;
   const lat = data.latitude;
   const lng = data.longitude;
+  const placeId = data.placeId;
   const seasonName = data.seasonName;
   const score = data.score;
 
@@ -139,7 +137,7 @@ export async function POST(request) {
   const listingId = await getListingId(placeId, true, lat, lng);
 
   const seasonId = await getSeasonId(seasonName);
-  // make sure seasonId and score are valid
+  // make sure season and score are valid
   if (seasonId === null) {
     return NextResponse.json({error: `season ${seasonName} does not exist`}, {status: 500});
   }
@@ -159,102 +157,37 @@ export async function POST(request) {
 }
 
 
-// delete reviews by the user (delete all if fields not specified)
-// optional fields: placeId, seasonName
-export async function DELETE(request) {
-  const loggedInData = await checkLoggedIn();
-  if (!loggedInData.loggedIn) {
-    return NextResponse.json({error: 'not signed in'}, {status: 403});
-  }
+// export async function DELETE(request) {
+//   const loggedInData = await checkLoggedIn();
+//   if (!loggedInData.loggedIn) {
+//     return NextResponse.json({error: 'not signed in'}, {status: 403});
+//   }
 
-  let data;
-  try {
-    data = await request.json();
-  }
-  catch(error) {
-    console.error(error);
-    return NextResponse.json({error: error}, {status: 500}, {data: request});
-  }
-
-  // get optional fields from data
-  const placeId = Object.hasOwn(data, "placeId") ? data.placeId : null;
-  const seasonName = Object.hasOwn(data, "seasonName") ? data.seasonName : null;
-  // convert to ids
-  const listingId = getListingId(placeId);
-  const seasonId = getSeasonId(seasonName);
-
-  const reviews = await prisma.review.deleteMany({
-    where: {
-      ownerId: {
-        equals: loggedInData.user?.id
-      }, 
-      // if listingId or seasonId is null, set to undefined so that the prisma query ignores it
-      listingId: listingId === null ? undefined : {
-        equals: listingId
-      },
-      seasonId: seasonId === null ? undefined : {
-        equals: seasonId
-      }
-    }
-  });
-  return NextResponse.json(reviews);
-}
+//   const index = await request.json();
+//   const deleteReview = await prisma.review.delete({
+//     where: {
+//       id: {
+//         equals: index
+//       }
+//     }, 
+//   });
+//   return NextResponse.json(index);
+// }
 
 
-// update score for all of a user's reviews of a listing for a season
-// required fields: placeId, seasonName, newScore
-export async function PATCH(request) {
-  const loggedInData = await checkLoggedIn();
-  if (!loggedInData.loggedIn) {
-    return NextResponse.json({error: 'not signed in'}, {status: 403});
-  }
-
-  let data;
-  try {
-    data = await request.json();
-  }
-  catch(error) {
-    console.error(error);
-    return NextResponse.json({error: error}, {status: 500}, {data: request});
-  }
-
-  // check for required fields
-  if (!Object.hasOwn(data, "placeId") || !Object.hasOwn(data, "seasonName") 
-      || !Object.hasOwn(data, "newScore")) {
-    return NextResponse.json({status: 400}, {data: request});
-  }
-  const placeId = data.placeId;
-  const seasonName = data.seasonName;
-  const newScore = data.newScore;
-
-  const listingId = await getListingId(placeId);
-  const seasonId = await getSeasonId(seasonName);
-  // make sure placeId, seasonId and newScore are valid
-  if (listingId == null) {
-    return NextResponse.json({error: `listing with placeId ${placeId} does not exist`}, {status: 500});
-  }
-  if (seasonId === null) {
-    return NextResponse.json({error: `season ${seasonName} does not exist`}, {status: 500});
-  }
-  if (!Number.isInteger(newScore)) {
-    return NextResponse.json({error: `newScore ${newScore} is not an Integer`}, {status: 500});
-  }
-
-  const reviews = await prisma.review.updateMany({
-    where: {
-      ownerId: {
-        equals: loggedInData.user?.id
-      }, 
-      listingId: {
-        equals: listingId
-      },
-      seasonId: {
-        equals: seasonId
-      }
-    }, 
-    data: {
-      score: newScore
-    }
-  });
-  return NextResponse.json(reviews);
-}
+// export async function PATCH(request) {
+//   const loggedInData = await checkLoggedIn();
+//   if (loggedInData.loggedIn) {
+//     const { idx, isDone } = await request.json();
+//     const updateReview = await prisma.review.update({
+//       where: {
+//         id: idx
+//       }, 
+//       data: {
+//         done: isDone
+//       }, 
+//     });
+//     return NextResponse.json(isDone);
+//   }
+//   return NextResponse.json({error: 'not signed in'}, {status: 403});
+// }

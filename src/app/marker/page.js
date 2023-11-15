@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useRef } from 'react';
 
 
 export default function MapWithMarker({ onMarkerPlaced }) {
   const [map, setMap] = useState(null);
   const markerRef = useRef(null);
-
 
   useEffect(() => {
     if (!map) {
@@ -19,6 +18,9 @@ export default function MapWithMarker({ onMarkerPlaced }) {
         // Remove the previous marker if it exists
         if (markerRef.current) {
           markerRef.current.setMap(null);
+        // Remove the previous marker if it exists
+        if (markerRef.current) {
+          markerRef.current.setMap(null);
         }
         // Place a new marker
         placeMarker(event.latLng, mapInstance);
@@ -28,7 +30,6 @@ export default function MapWithMarker({ onMarkerPlaced }) {
       setMap(mapInstance);
     }
   }, [map]);
-
 
   // Function to place a marker on the map
   const placeMarker = (location, mapInstance) => {
@@ -52,6 +53,8 @@ export default function MapWithMarker({ onMarkerPlaced }) {
 
     // Invoke the callback with marker position
     onMarkerPlaced(newMarker.getPosition().toJSON());
+    // Update the marker ref
+    markerRef.current = newMarker;
     // Update the marker ref
     markerRef.current = newMarker;
   };
