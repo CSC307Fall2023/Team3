@@ -48,12 +48,13 @@ export default function Review() {
       console.log('Rating submitted:', rating);
       console.log('Marker position:', markerPosition);
       console.log('Marker address:', markerAddress);
-
+      console.log('Selected season:', seasons);
 
       const placeId = markerPlaceId;
 
 
       fetch("api/reviews", { method: "post", body: JSON.stringify(
+        {placeId: placeId, latitude: markerPosition.lat, longitude: markerPosition.lng, seasonName: seasons.id, score: rating}) } )
         {placeId: placeId, latitude: markerPosition.lat, longitude: markerPosition.lng, seasonName: seasons.id, score: rating}) } )
           .then((response) => {
             console.log("Sent POST request for review of", placeId);
@@ -120,7 +121,9 @@ export default function Review() {
               />
             </label>
             <p id="currentDate"></p>
+            <p id="currentDate"></p>
             {markerAddress && <p>Selected Address: {markerAddress}</p>}
+            {seasons.name && <p>Season: {seasons.name}</p>}
             {seasons.name && <p>Season: {seasons.name}</p>}
             <button type="submit">Submit Review</button>
           </form>
