@@ -49,7 +49,7 @@ export default function Login() {
   
   return (
     <>
-      <Button variant="outlined" color="inherit" onClick={handleLoginButton}>Login</Button>
+      <Button variant="outlined" color="inherit" onClick={() => {handleLoginButton();}}>Login</Button>
       {open && <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Login</DialogTitle>
         <DialogContent>

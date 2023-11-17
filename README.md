@@ -1,5 +1,36 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Joe made a diagram :D
 
+Here's one that might describe a more complete flow:
+```mermaid
+graph TD
+    start[Start];
+    login[Login/Signup];
+    profile[User Profile];
+    anonymous[Anonymous View];
+    mapView[Map View];
+    listing[Listing View];
+    pin[Pin Location];
+    review[Review Location];
+    image[Submit/View Image];
+    holiday[Holiday Filter];
+    route[Route Selection];
+    save[Save Favorite];
+    privacy[House Privacy Settings];
+
+    start --> login;
+    start --> anonymous;
+    login --> profile;
+    profile --> mapView;
+    anonymous --> mapView;
+    mapView --> pin;
+    pin --> review;
+    mapView --> listing;
+    listing --> image;
+    mapView --> holiday;
+    mapView --> route;
+    profile --> save;
+    profile --> privacy;
+```
 ## Getting Started
 
 First, get a database running. You will need Docker installed on your machine. 

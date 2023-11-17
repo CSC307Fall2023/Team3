@@ -1,6 +1,7 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,10 +12,57 @@ datasource db {
 }
 
 model User {
-  id  Int @id @default(autoincrement())
+  id Int @id @default(autoincrement())
+  username String @unique
   email String @unique
-  password String 
+  password String
+  admin Boolean @default(false)
+  savedListings Listing[]
+  reviews Review[]
+  images Image[]
   toDos ToDo[]
+}
+
+model Listing {
+  id Int @id @default(autoincrement())
+  placeId String @unique
+  latitude Decimal
+  longitude Decimal
+  blacklisted Boolean @default(false)
+  users User[]
+  reviews Review[]
+  images Image[]
+}
+
+model Review {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  listing Listing @relation(fields: [listingId], references: [id])
+  listingId Int
+  season Season @relation(fields: [seasonId], references: [id])
+  seasonId Int
+  score Int
+}
+
+model Image {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  listing Listing @relation(fields: [listingId], references: [id])
+  listingId Int
+  season Season @relation(fields: [seasonId], references: [id])
+  seasonId Int
+  image Bytes
+}
+
+model Season {
+  id Int @id @default(autoincrement())
+  name String @unique
+  start DateTime
+  end DateTime
+  reviews Review[]
+  images Image[]
 }
 
 model ToDo {
@@ -22,5 +70,5 @@ model ToDo {
   value String
   done Boolean
   owner User @relation(fields: [ownerId], references: [id])
-  ownerId Int 
+  ownerId Int
 }
