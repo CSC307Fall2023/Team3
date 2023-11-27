@@ -171,7 +171,7 @@ const MyMapComponent = () => {
 };
 
 const MyApp = () => (
-  <Wrapper apiKey={"AIzaSyCfjRYn8UX0Z5khv2j2AMLfYYLydD379Nk"} onLoad={() => console.log('Google Maps API loaded successfully.')}>
+
     <MyMapComponent />
   </Wrapper>
 );
