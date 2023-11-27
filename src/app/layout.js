@@ -3,7 +3,7 @@ import RootLayout from './RootLayout';
 import AuthProvider from './AuthProvider';
 
 const inter = Inter({ subsets: ['latin'] })
-const COMPANY_NAME = "MyCompany";
+const COMPANY_NAME = "Decor Developers";
 
 export const metadata = {
   title: COMPANY_NAME

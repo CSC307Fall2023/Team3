@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef, useRef } from 'react';
 
 
+
 export default function MapWithMarker({ onMarkerPlaced }) {
   const [map, setMap] = useState(null);
   const markerRef = useRef(null);
+
 
   useEffect(() => {
     if (!map) {
@@ -11,6 +13,8 @@ export default function MapWithMarker({ onMarkerPlaced }) {
         center: { lat: 35.299878, lng: -120.662337 },
         zoom: 14,
       });
+
+
 
 
       // Add click event listener to the map
@@ -27,9 +31,12 @@ export default function MapWithMarker({ onMarkerPlaced }) {
       });
 
 
+
+
       setMap(mapInstance);
     }
   }, [map]);
+
 
   // Function to place a marker on the map
   const placeMarker = (location, mapInstance) => {
@@ -39,6 +46,8 @@ export default function MapWithMarker({ onMarkerPlaced }) {
       map: mapInstance,
       draggable: true, // Allow dragging the marker
     });
+
+
 
 
     // Add click event listener to the marker
@@ -51,6 +60,8 @@ export default function MapWithMarker({ onMarkerPlaced }) {
     });
 
 
+
+
     // Invoke the callback with marker position
     onMarkerPlaced(newMarker.getPosition().toJSON());
     // Update the marker ref
@@ -58,6 +69,8 @@ export default function MapWithMarker({ onMarkerPlaced }) {
     // Update the marker ref
     markerRef.current = newMarker;
   };
+
+
 
 
   // Function to get address from LatLng
@@ -77,6 +90,8 @@ export default function MapWithMarker({ onMarkerPlaced }) {
       });
     });
   };
+
+
 
 
   return <div id="map" style={{ width: '100%', height: '400px', marginTop: '20px' }}></div>;

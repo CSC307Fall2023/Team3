@@ -1,10 +1,13 @@
 'use client'
 
+
 import Map from 'src/app/map.js';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import MapWithMarker from 'src/app/marker/page.js';
+
+
 
 
 export default function Review() {
@@ -21,6 +24,7 @@ export default function Review() {
     setRating(parseInt(event.target.value, 10));
   };
 
+
   const handleMarkerPlacement = (position) => {
     setMarkerPosition(position);
     // Use the geocoder to get the address from LatLng
@@ -30,12 +34,10 @@ export default function Review() {
     });
   };
 
-  const handleSeasonChange = (event) => {
-    setSelectedSeason(event.target.value);
-  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
 
     // Check if a review has already been submitted and marker is placed
     if (reviewSubmitted) {
@@ -46,9 +48,10 @@ export default function Review() {
       console.log('Rating submitted:', rating);
       console.log('Marker position:', markerPosition);
       console.log('Marker address:', markerAddress);
-      console.log('Selected season:', seasons);
+
 
       const placeId = markerPlaceId;
+
 
       fetch("api/reviews", { method: "post", body: JSON.stringify(
         {placeId: placeId, latitude: markerPosition.lat, longitude: markerPosition.lng, seasonName: seasons.id, score: rating}) } )
@@ -56,11 +59,12 @@ export default function Review() {
             console.log("Sent POST request for review of", placeId);
             console.log("post response:", response);
           });
-      
+     
       // After successful submission, set reviewSubmitted to true
       setReviewSubmitted(true);
     }
   };
+
 
   // returns a GeocoderResult, including formatted_address and place_id fields
   const getPlaceFromLatLng = (latLng) => {
@@ -125,3 +129,5 @@ export default function Review() {
     </>
   );
 }
+
+

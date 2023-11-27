@@ -1,0 +1,12 @@
+.homeStyle {
+    margin: 0;
+    padding: 0;
+    background: url('https://th.bing.com/th/id/OIP.ntuWp2PZZNfUUP1dDiPgbwHaFj?rs=1&pid=ImgDetMain') center center fixed;
+    background-size: cover;
+  }
+  
+  .pageContainer {
+    /* Add styles for your component container, if needed */
+  }
+
+  
