@@ -1,10 +1,13 @@
 'use client'
 
+
 import Map from 'src/app/map.js';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import MapWithMarker from 'src/app/marker/page.js';
+
+
 
 
 export default function Review() {
@@ -15,11 +18,14 @@ export default function Review() {
   const [markerPlaceId, setMarkerPlaceId] = useState(null);
   const pathname = usePathname();
 
+
+
   const [seasons, setSeasons] = useState([]);
 
   const handleRatingChange = (event) => {
     setRating(parseInt(event.target.value, 10));
   };
+
 
   const handleMarkerPlacement = (position) => {
     setMarkerPosition(position);
@@ -32,7 +38,7 @@ export default function Review() {
 
   const handleSeasonChange = (event) => {
     setSelectedSeason(event.target.value);
-  };
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -50,17 +56,19 @@ export default function Review() {
 
       const placeId = markerPlaceId;
 
+
       fetch("api/reviews", { method: "post", body: JSON.stringify(
         {placeId: placeId, latitude: markerPosition.lat, longitude: markerPosition.lng, seasonName: seasons.id, score: rating}) } )
           .then((response) => {
             console.log("Sent POST request for review of", placeId);
             console.log("post response:", response);
           });
-      
+     
       // After successful submission, set reviewSubmitted to true
       setReviewSubmitted(true);
     }
   };
+
 
   // returns a GeocoderResult, including formatted_address and place_id fields
   const getPlaceFromLatLng = (latLng) => {
@@ -80,6 +88,7 @@ export default function Review() {
     });
   };
 
+
   const fetchSeasonsAndPopulateSelect = async () => {
     try {
       const response = await fetch("api/seasons", { method: "get" });
@@ -94,6 +103,7 @@ export default function Review() {
   useEffect(() => {
     fetchSeasonsAndPopulateSelect();
   }, []);
+
 
   return (
     <>
@@ -125,3 +135,5 @@ export default function Review() {
     </>
   );
 }
+
+

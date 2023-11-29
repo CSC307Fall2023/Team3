@@ -13,7 +13,8 @@ export async function POST(request) {
         data: { username: username, email: email, password: hashedPassword }
       });
     } catch (e) {
-      return NextResponse.json({error: e.message}, {status: 500 })
+      console.log(e);
+      return NextResponse.json({error: e.message}, {status: 501 })
     }
     return NextResponse.json(user);
   }

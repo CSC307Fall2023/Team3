@@ -13,6 +13,9 @@ import Signup from './Signup';
 import { useSession } from 'next-auth/react';
 import { Button } from '@mui/material';
 import { signOut } from "next-auth/react"
+import SantaSleigh from 'src/app/SantaSleigh'; 
+import React, { useState } from 'react';
+import homeStyle from 'src/app/homestyle.module.css'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 
@@ -22,7 +25,11 @@ const theme = createTheme({
 
 export default function RootLayout({ children, title }) {
   const { data: session, status } = useSession();
+  const [showSanta, setShowSanta] = useState(true);
 
+  const toggleSanta = () => {
+    setShowSanta((prevShow) => !prevShow);
+  };
   let loginSection;
 
   if (status === 'authenticated') {
@@ -38,15 +45,16 @@ export default function RootLayout({ children, title }) {
     <ThemeProvider theme={theme}>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <AppBar position="static" sx={{
-                  mr: 2,
-                  display: { xs: 'none', md: 'flex' },
-                  fontFamily: 'monospace',
-                  fontWeight: 700,
-                  letterSpacing: '.3rem',
-                  color: 'inherit',
-                  textDecoration: 'none',
-                }}>
+        <AppBar position="static"
+        sx={{
+          background:
+            'repeating-linear-gradient(45deg, #f44336, #f44336 10%, #4caf50 10%, #4caf50 20%)',
+        }}>
+
+        { /* showSanta && <SantaSleigh />} {/* Add your SantaSleigh component */}
+      {/* Other content */}
+      { /* <button onClick={toggleSanta}>{showSanta ? 'Hide Santa' : 'Show Santa'}</button> */ }
+   
           <Container maxWidth="xl">
             <Toolbar disableGutters>
               <Typography
@@ -80,5 +88,6 @@ export default function RootLayout({ children, title }) {
         {children}
       </Box>
     </ThemeProvider>
+
   );
 }

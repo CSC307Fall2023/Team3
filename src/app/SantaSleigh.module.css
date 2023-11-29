@@ -1,0 +1,15 @@
+.santaSleigh {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50% !important; /* Make the image fill the container */
+    height: auto;
+  /* Adjust the font size or use an SVG/image for Santa and sleigh */
+    animation: moveSanta 20s linear infinite;
+  }
+  
+  @keyframes moveSanta {
+    to {
+      transform: translateX(100vw);
+    }
+  }

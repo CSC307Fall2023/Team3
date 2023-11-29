@@ -14,6 +14,8 @@ export default function MapWithMarker({ onMarkerPlaced }) {
       });
 
 
+
+
       // Add click event listener to the map
       mapInstance.addListener('click', (event) => {
         // Remove the previous marker if it exists
@@ -23,6 +25,8 @@ export default function MapWithMarker({ onMarkerPlaced }) {
         // Place a new marker
         placeMarker(event.latLng, mapInstance);
       });
+
+
 
 
       setMap(mapInstance);
@@ -40,6 +44,8 @@ export default function MapWithMarker({ onMarkerPlaced }) {
     });
 
 
+
+
     // Add click event listener to the marker
     newMarker.addListener('click', () => {
       const markerPosition = newMarker.getPosition(); // Get marker position
@@ -50,11 +56,15 @@ export default function MapWithMarker({ onMarkerPlaced }) {
     });
 
 
+
+
     // Invoke the callback with marker position
     onMarkerPlaced(newMarker.getPosition().toJSON());
     // Update the marker ref
     markerRef.current = newMarker;
   };
+
+
 
 
   // Function to get address from LatLng
@@ -74,6 +84,8 @@ export default function MapWithMarker({ onMarkerPlaced }) {
       });
     });
   };
+
+
 
 
   return <div id="map" style={{ width: '100%', height: '400px', marginTop: '20px' }}></div>;
