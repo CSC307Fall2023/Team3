@@ -18,6 +18,8 @@ const MyMapComponent = () => {
   const markerRef = useRef(null);
   const [showSnowballs, setShowSnowballs] = useState(true);
 
+  const [seasons, setSeasons] = useState([]);
+
   const toggleSnowballs = () => {
     setShowSnowballs((prevShow) => !prevShow);
   };
@@ -89,6 +91,10 @@ const MyMapComponent = () => {
     }
   };
 
+  const handleSeasonChange = (event) => {
+    setSelectedSeason(event.target.value);
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -99,13 +105,14 @@ const MyMapComponent = () => {
       console.log('Rating submitted:', rating);
       console.log('Marker position:', markerPosition);
       console.log('Marker address:', markerAddress);
+      console.log('Selected season:', seasons);
 
-      const seasonName = "Thanksgiving 2023";  // TODO: get actual season instead of hardcoding
+      // const seasonName = "Thanksgiving 2023";  // TODO: get actual season instead of hardcoding
       const placeId = markerPlaceId;
 
       fetch("api/reviews", {
         method: "post",
-        body: JSON.stringify({ placeId, latitude: markerPosition.lat, longitude: markerPosition.lng, seasonName, score: rating }),
+        body: JSON.stringify({placeId: placeId, latitude: markerPosition.lat, longitude: markerPosition.lng, seasonName: seasons.name, score: rating}),
       }).then((response) => {
         console.log("Sent POST request for review of", placeId);
         console.log("post response:", response);
@@ -135,6 +142,21 @@ const MyMapComponent = () => {
     });
   };
 
+  const fetchSeasonsAndPopulateSelect = async () => {
+    try {
+      const response = await fetch("api/seasons", { method: "get" });
+      const data = await response.json();
+      console.log("Fetched data:", data);
+      setSeasons(data);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSeasonsAndPopulateSelect();
+  }, []);
+
   return (
     <>
   {/* <div className={`${homeStyle.homeStyle} pageContainer`}> */}
@@ -160,6 +182,7 @@ const MyMapComponent = () => {
               />
             </label>
             {markerAddress && <p>Selected Address: {markerAddress}</p>}
+            {seasons.name && <p>Season: {seasons.name}</p>}
             <button type="submit">Submit Review</button>
           </form>
         )}
@@ -169,7 +192,6 @@ const MyMapComponent = () => {
     </>
   );
 };
-
 
 const MyApp = () => (
   <Wrapper apiKey={process.env.NEXT_PUBLIC_MAPS_KEY} onLoad={() => console.log('Google Maps API loaded successfully.')}>
