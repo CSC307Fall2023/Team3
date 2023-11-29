@@ -170,8 +170,9 @@ const MyMapComponent = () => {
   );
 };
 
-const MyApp = () => (
 
+const MyApp = () => (
+  <Wrapper apiKey={process.env.NEXT_PUBLIC_MAPS_KEY} onLoad={() => console.log('Google Maps API loaded successfully.')}>
     <MyMapComponent />
   </Wrapper>
 );
