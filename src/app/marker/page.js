@@ -28,8 +28,10 @@ export default function MapWithMarker({ onMarkerPlaced }) {
         }
         // Place a new marker
         placeMarker(event.latLng, mapInstance);
+        }
       });
-
+      
+    
 
 
 
