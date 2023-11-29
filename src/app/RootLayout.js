@@ -41,7 +41,6 @@ export default function RootLayout({ children, title }) {
   }
 
   return (
-    <div className={`${homeStyle.homeStyle} pageContainer`}>
     <ThemeProvider theme={theme}>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
@@ -89,6 +88,6 @@ export default function RootLayout({ children, title }) {
         {children}
       </Box>
     </ThemeProvider>
-    </div>
+
   );
 }
