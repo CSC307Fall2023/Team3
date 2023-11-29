@@ -7,70 +7,41 @@
 // import prisma from "@/lib/db";
 // import { checkLoggedIn } from "@/lib/auth";
 
+import { NextResponse } from "next/server";
+import prisma from "@/lib/db";
 
+// basic GET function. 
+export async function GET(request)
+{
+    const listings = await prisma.listings.findMany();
+    return NextResponse.json(listings)
+}
+
+// I think we need to use include if we want specific info from Listings. B/c we'll want a listings panel on 
+// our site that can display review/rating, address information, etc.
 // export async function GET(request) {
-//   const loggedInData = await checkLoggedIn();
-//   if (loggedInData.loggedIn) {
-//     const todos = await prisma.toDo.findMany({
-//       where: {
-//         ownerId: {
-//           equals: loggedInData.user?.id
-//         }
-//       }
-//     });
-//     return NextResponse.json(todos);
-//   }
-//   return NextResponse.json({error: 'not signed in'}, {status: 403});
+//     try {
+//         const listings = await prisma.listings.findMany({
+//             include: {
+//                 reviews: true, // Include reviews associated with each listing
+//             },
+//         });
+
+//         return NextResponse.json(listings);
+//     } catch (error) {
+//         console.error("Error fetching listings:", error);
+//         return NextResponse.error("Internal Server Error", { status: 500 });
+//     }
 // }
 
+// export async function GET(request){
+//     try
+//     {
 
-// export async function POST(request) {
-//   const loggedInData = await checkLoggedIn();
-//   if (loggedInData.loggedIn) {
-//     const { done, value } = await request.json();
-//     const todo = await prisma.toDo.create({
-//       data: {
-//         ownerId: loggedInData.user?.id,
-//         done,
-//         value
-//       }
-//     });
-//     return NextResponse.json(todo);
-//   }
-//   return NextResponse.json({error: 'not signed in'}, {status: 403});
-// }
-
-
-// export async function DELETE(request) {
-//   const loggedInData = await checkLoggedIn();
-//   if (loggedInData.loggedIn) {
-//     const index = await request.json();
-//     const deleteTodo = await prisma.toDo.delete({
-//       where: {
-//         id: {
-//           equals: index
-//         }
-//       }, 
-//     });
-//     return NextResponse.json(index);
-//   }
-//   return NextResponse.json({error: 'not signed in'}, {status: 403});
-// }
-
-
-// export async function PATCH(request) {
-//   const loggedInData = await checkLoggedIn();
-//   if (loggedInData.loggedIn) {
-//     const { idx, isDone } = await request.json();
-//     const updateTodo = await prisma.toDo.update({
-//       where: {
-//         id: idx
-//       }, 
-//       data: {
-//         done: isDone
-//       }, 
-//     });
-//     return NextResponse.json(isDone);
-//   }
-//   return NextResponse.json({error: 'not signed in'}, {status: 403});
+//     }
+//     catch(error)
+//     {
+//         console.error("Error fetching listings:", error);
+//         return NextResponse.error("Internal Server Error", {status: 500});
+//     }
 // }

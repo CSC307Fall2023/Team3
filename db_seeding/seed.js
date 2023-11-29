@@ -24,10 +24,12 @@ async function insertSeason(name, start, end) {
 async function seedSeasons() {
     console.log("seeding seasons...");
 
+    let seasonCount = 0;
+
     const filepath = "db_seeding/seasons.csv";
     let data = fs.readFileSync(filepath, "utf8").split("\n");
 
-    let name, start, end;
+    let name, start, end
     for (const line of data) {
         [name, start, end] = line.split(", ").map(s => s.trim());
         if (name && start && end) {
@@ -44,11 +46,12 @@ async function seedSeasons() {
             }
             else {
                 await insertSeason(name, start, end);
+                seasonCount++;
             }
         }
     }
 
-    console.log("finished seeding seasons");
+    console.log(`finished seeding ${seasonCount} seasons`);
 }
 
 
@@ -73,6 +76,8 @@ async function insertUser(username, email, password) {
 async function seedUsers(usernames, emails, passwords) {
     console.log("seeding users...");
 
+    let userCount = 0;
+
     for (let i = 0; i < usernames.length; i++) {
         const usernameData = await prisma.user.findMany({
             where: {
@@ -94,10 +99,11 @@ async function seedUsers(usernames, emails, passwords) {
         }
         else {
             await insertUser(usernames[i], emails[i], passwords[i]);
+            userCount++;
         }
     }
 
-    console.log("finished seeding users");
+    console.log(`finished seeding ${userCount} users`);
 }
 
 
@@ -158,6 +164,7 @@ async function insertReview(userId, placeId, latitude, longitude, seasonId, scor
 async function seedReviews(reviewThreshold, testUsername, seasonName) {
     console.log("seeding reviews...");
 
+    let reviewCount = 0;
     const minScore = 1;
     const maxScore = 10;
 
@@ -195,8 +202,9 @@ async function seedReviews(reviewThreshold, testUsername, seasonName) {
 
     for (let i = 0; i < data.length; i++) {
         [placeId, latitude, longitude] = data[i].split(", ").map(s => s.trim());
-        // for half of the listings, make reviewThreshold reviews, 
-        // reviewThreshold-1 for a quarter, and reviewThreshold-2 for the last quarter
+        // for about half of the listings, make reviewThreshold reviews, 
+        // reviewThreshold-1 for a quarter, and reviewThreshold-2 for the last quarter.
+        // this is not great but close enough to half/quarter/quarter
         if (i < lastHalf) count = reviewThreshold;
         else if (i < lastQuarter) count = reviewThreshold - 1;
         else count = reviewThreshold - 2;
@@ -204,11 +212,12 @@ async function seedReviews(reviewThreshold, testUsername, seasonName) {
         for (let j = 0; j < count; j++) {
             score = Math.floor(Math.random() * (maxScore - minScore + 1) + minScore);  // random score
             await insertReview(userId, placeId, latitude, longitude, seasonId, score);
+            reviewCount++;
         }
         console.log();
     }
 
-    console.log("finished seeding reviews");
+    console.log(`finished seeding ${reviewCount} reviews`);
 }
 
 
