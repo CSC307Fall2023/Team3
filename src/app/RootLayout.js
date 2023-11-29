@@ -92,7 +92,7 @@ import { Button } from '@mui/material';
 import { signOut } from "next-auth/react"
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-// Define a custom theme to match the wireframe's color scheme and typography
+
 const theme = createTheme({
   // Custom theme settings go here
 });
@@ -102,7 +102,6 @@ export default function RootLayout({ children, title }) {
 
   let loginSection;
 
-  // Dynamically render the login section based on user authentication status
   if (status === 'authenticated') {
     loginSection = <Button variant="outlined" color="inherit" onClick={() => signOut()}>Sign Out</Button>;
   } else {
