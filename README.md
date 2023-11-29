@@ -26,7 +26,7 @@ Replace "YOUR_API_KEY_HERE" with a Google Maps API key (email superjoeyd123@gmai
 
 Initialize the database (from the Team3/ directory).
 ```bash
-node db_seeding/seed.js
+node db_seeding/seed.js -a
 ```
 
 Finally, run the development server:

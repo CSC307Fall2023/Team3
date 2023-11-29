@@ -6,6 +6,11 @@ import prisma from "@/lib/db";
 //     return NextResponse.json(seasons);
 // }
 
+// export async function GET(request) {
+//     const seasons = await prisma.season.findMany();
+//     return NextResponse.json(seasons);
+// }
+
 export async function GET(request) {
     // const currentDate = new Date();
     // console.log(currentDate);
