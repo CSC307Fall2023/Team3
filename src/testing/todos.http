@@ -4,8 +4,8 @@ GET http://localhost:3000/api/auth/csrf HTTP/1.1
 
 ######
 @token = {{csrf.response.body.csrfToken}}
-@email = test@test7.com
-@password = test
+@email = andrew@hotmale.com
+@password = password2
 
 POST http://localhost:3000/api/auth/callback/normal HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
@@ -47,3 +47,17 @@ POST http://localhost:3000/api/auth/signout
 Content-Type: application/x-www-form-urlencoded
 
 csrfToken={{token}}
+
+
+####
+# look at database using "npx prisma studio" for existing ids
+@idx = 9
+@isDone = true
+
+PATCH http://localhost:3000/api/todos HTTP/1.1
+Content-Type: application/json
+
+{
+  "idx": {{idx}},
+  "isDone": {{isDone}}
+}

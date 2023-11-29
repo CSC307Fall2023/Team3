@@ -1,0 +1,200 @@
+# these tests are meant to be run in order for "EXPECTED" comments to be useful.
+# the database must already be seeded with seasons and users.
+# NOTE: AT THE END, GO INTO PRISMA STUDIO AND DELETE THE TWO LISTINGS CREATED BY THESE TESTS
+
+
+
+#####  HTTP CREDENTIALS
+# @name csrf
+GET http://localhost:3000/api/auth/csrf HTTP/1.1
+
+
+
+######  LOG IN AS ALICE
+@token = {{csrf.response.body.csrfToken}}
+@email_alice = alice@gmail.com
+@password_alice = password
+POST http://localhost:3000/api/auth/callback/normal HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+csrfToken={{token}}&email={{email_alice}}&password={{password_alice}}&redirect=false&json=true
+
+
+
+#####  GET REVIEWS
+# EXPECTED: empty (if no reviews are currently in the database)
+GET http://localhost:3000/api/reviews HTTP/1.1
+
+
+
+####  POST NEW REVIEW AS ALICE
+# EXPECTED: Listing created with this placeId and lat/lng, 
+# seasonId matches this seasonName, 
+# listingId matches new Listing, 
+# score matches this score
+@placeId_1 = "example place id"
+@latitude_1 = 420.69
+@longitude_1 = -420.69
+@seasonName = "Christmas 2023"
+@score_1 = 1
+POST http://localhost:3000/api/reviews HTTP/1.1
+Content-Type: application/json
+
+{
+  "placeId": {{placeId_1}}, 
+  "latitude": {{latitude_1}}, 
+  "longitude": {{longitude_1}}, 
+  "seasonName": {{seasonName}}, 
+  "score": {{score_1}}
+}
+
+
+
+####  UPDATE THE REVIEW
+# EXPECTED: {"count": 1} shows that 1 record has been updated, 
+# prisma studio shows new score for same review
+@newScore = 6
+PATCH http://localhost:3000/api/reviews HTTP/1.1
+Content-Type: application/json
+
+{
+  "placeId": {{placeId_1}}, 
+  "seasonName": {{seasonName}}, 
+  "newScore": {{newScore}}
+}
+
+
+
+#####  GET REVIEWS
+# EXPECTED: has the review with updated score
+GET http://localhost:3000/api/reviews HTTP/1.1
+
+
+
+####  LOG OUT
+@token = {{csrf.response.body.csrfToken}}
+POST http://localhost:3000/api/auth/signout
+Content-Type: application/x-www-form-urlencoded
+
+csrfToken={{token}}
+
+
+
+####  LOG IN AS BOB
+@email_bob = bob@gmail.com
+@password_bob = password
+POST http://localhost:3000/api/auth/callback/normal HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+csrfToken={{token}}&email={{email_bob}}&password={{password_bob}}&redirect=false&json=true
+
+
+
+####  POST NEW REVIEW AS BOB
+# EXPECTED: no Listing created because this uses the same one as Alice's review, 
+# seasonId matches this seasonName, 
+# listingId matches this Listing, 
+# score matches this score
+@score_2 = 2
+POST http://localhost:3000/api/reviews HTTP/1.1
+Content-Type: application/json
+
+{
+  "placeId": {{placeId_1}}, 
+  "latitude": {{latitude_1}}, 
+  "longitude": {{longitude_1}}, 
+  "seasonName": {{seasonName}}, 
+  "score": {{score_2}}
+}
+
+
+
+####  POST ANOTHER NEW REVIEW AS BOB
+# EXPECTED: Listing created with this placeId and lat/lng, 
+# seasonId matches this seasonName, 
+# listingId matches new Listing, 
+# score matches this score
+@placeId_2 = "second place id"
+@latitude_2 = 1
+@longitude_2 = 1
+@score_3 = 3
+POST http://localhost:3000/api/reviews HTTP/1.1
+Content-Type: application/json
+
+{
+  "placeId": {{placeId_2}}, 
+  "latitude": {{latitude_2}}, 
+  "longitude": {{longitude_2}}, 
+  "seasonName": {{seasonName}}, 
+  "score": {{score_3}}
+}
+
+
+
+#####  GET REVIEWS
+# EXPECTED: has both reviews from this account, 
+# doesn't show the review from the other account
+GET http://localhost:3000/api/reviews HTTP/1.1
+
+
+
+####  DELETE THE NEWEST REVIEW
+# EXPECTED: {"count": 1} shows that one review has been deleted
+DELETE http://localhost:3000/api/reviews HTTP/1.1
+Content-Type: application/json
+
+{
+  "placeId": {{placeId_2}}, 
+  "seasonName": {{seasonName}}
+}
+
+
+
+#####  GET REVIEWS
+# EXPECTED: has first review with this account, but not the deleted one, 
+# doesn't show the review from the other account
+GET http://localhost:3000/api/reviews HTTP/1.1
+
+
+
+####  CLEANUP
+#### delete bob's other review with placeId_1
+DELETE http://localhost:3000/api/reviews HTTP/1.1
+Content-Type: application/json
+
+{
+  "placeId": {{placeId_1}}, 
+  "seasonName": {{seasonName}}
+}
+
+#### log out
+@token = {{csrf.response.body.csrfToken}}
+POST http://localhost:3000/api/auth/signout
+Content-Type: application/x-www-form-urlencoded
+
+csrfToken={{token}}
+
+#### log in as alice
+@token = {{csrf.response.body.csrfToken}}
+POST http://localhost:3000/api/auth/callback/normal HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+csrfToken={{token}}&email={{email_alice}}&password={{password_alice}}&redirect=false&json=true
+
+#### delete alice's review with placeId_1
+DELETE http://localhost:3000/api/reviews HTTP/1.1
+Content-Type: application/json
+
+{
+  "placeId": {{placeId_1}}, 
+  "seasonName": {{seasonName}}
+}
+
+#### log out
+@token = {{csrf.response.body.csrfToken}}
+POST http://localhost:3000/api/auth/signout
+Content-Type: application/x-www-form-urlencoded
+
+csrfToken={{token}}
+
+# GO INTO PRISMA STUDIO AND DELETE THE TWO LISTINGS CREATED BY THESE TESTS

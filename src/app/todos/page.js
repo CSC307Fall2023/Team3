@@ -31,18 +31,16 @@ export default function ToDos() {
                     setNewTodo('');
                 });
             });
-            
         }
     }
 
     function removeTodo({ index }) {
-        const todoToRemove = todos[index];
-        fetch(`/api/todos/${todoToRemove.id}`, {method: 'delete'}).then((response) => {
+        const todoToRemove = todos[index]
+        fetch(`/api/todos/${todoToRemove.id}`, {method: "delete"}).then((response) => {
             return response.json().then(() => {
                 setTodos(todos.filter((v,idx) => idx!==index));
             });
-        });
-        
+        })
     }
 
     useEffect(() => {
@@ -54,28 +52,18 @@ export default function ToDos() {
         );
     }, []);
 
-
-    async function toggleTodo({ index }) {
-        const todoToUpdate = todos[index];
+    const handleCheckboxChange = (event, index) => {
+        const todoToUpdate = todos[index]
+        const updatedTodo = { ...todoToUpdate, done: !todoToUpdate.done }; 
         fetch(`/api/todos/${todoToUpdate.id}`, {
-        method: "put",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            value: todoToUpdate.value,
-            done: !todoToUpdate.done,
-        }),
-        }).then((response) => {
-        if (response.ok) {
-            setTodos(
-            todos.map((todo, idx) =>
-                idx === index ? { ...todo, done: !todo.done } : todo
-            )
-            );
-        }
+            method: "put", 
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(updatedTodo)
         });
-    }
+        setTodos([...todos.slice(0, index), updatedTodo, ...todos.slice(index + 1)]);
+    };
 
     const loadingItems = <CircularProgress/>;
 
