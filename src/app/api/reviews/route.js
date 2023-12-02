@@ -6,43 +6,7 @@ import { checkLoggedIn } from "@/lib/auth";
 // gets reviews by the user
 export async function GET(request)
 {   
-  // const currentDate = new Date();
-  // console.log(currentDate);
-  // const currentSeason = await prisma.season.findMany({
-  //     where: {
-  //         start: { lte: currentDate },
-  //         end: { gte: currentDate },
-  //     },
-  // });
-
-  let data;
-  var placeId, seasonName;
-  try {
-    data = await request.json();
-    var {placeId, seasonName} = data;
-  }
-  catch(error) {
-    placeId = null;
-    seasonName = null;
-  }
-
-  // convert to ids
-  const listingId = await getListingId(placeId);
-  const seasonId = await getSeasonId(seasonName);
-
   const reviews = await prisma.review.findMany({
-    where: {
-      userId: {
-        equals: loggedInData.user?.id
-      }, 
-      // if listingId or seasonId is null, set to undefined so that the prisma query ignores it
-      listingId: listingId === null ? undefined : {
-        equals: listingId
-      },
-      seasonId: seasonId === null ? undefined : {
-        equals: seasonId
-      }
-    }
   });
 
   console.log(reviews);
