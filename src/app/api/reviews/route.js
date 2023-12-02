@@ -5,19 +5,8 @@ import { checkLoggedIn } from "@/lib/auth";
 
 // gets all reviews by the user
 export async function GET(request) {
-  const loggedInData = await checkLoggedIn();
-  if (!loggedInData.loggedIn) {
-    return NextResponse.json({error: 'not signed in'}, {status: 403});
-  }
-
-  const reviews = await prisma.review.findMany({
-    where: {
-      userId: {
-        equals: loggedInData.user?.id
-      }
-    }
-  });
-
+  // HARDCODED FOR DEMO PURPOSES.
+  const reviews = await prisma.review.findMany({});
   console.log(reviews);
 
   return NextResponse.json(reviews)
