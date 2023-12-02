@@ -1,14 +1,6 @@
-// Todo: implement GET for listings
-
-// TODO: implement HTTP requests to get data from the database
-// currently copied from src/app/api/todos/route.js
-
-// import { NextResponse } from "next/server";
-// import prisma from "@/lib/db";
-// import { checkLoggedIn } from "@/lib/auth";
-
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
+
 
 // basic GET function. 
 export async function GET(request)
@@ -21,33 +13,16 @@ export async function GET(request)
         }
     });
     return NextResponse.json(listings)
-}
 
-// I think we need to use include if we want specific info from Listings. B/c we'll want a listings panel on 
-// our site that can display review/rating, address information, etc.
+// gets the placeIds of all listings and their average scores
 // export async function GET(request) {
-//     try {
-//         const listings = await prisma.listings.findMany({
-//             include: {
-//                 reviews: true, // Include reviews associated with each listing
-//             },
-//         });
+//     const listings = await prisma.$queryRaw`
+//         SELECT "public"."Listing"."placeId", AVG("public"."Review"."score") AS "avgScore"
+//         FROM "public"."Review", "public"."Listing"
+//         WHERE "public"."Review"."listingId" = "public"."Listing"."id"
+//         GROUP BY "public"."Listing"."placeId"
+//         ORDER BY "avgScore"
+//     `;
+//     return NextResponse.json(listings);
 
-//         return NextResponse.json(listings);
-//     } catch (error) {
-//         console.error("Error fetching listings:", error);
-//         return NextResponse.error("Internal Server Error", { status: 500 });
-//     }
-// }
-
-// export async function GET(request){
-//     try
-//     {
-
-//     }
-//     catch(error)
-//     {
-//         console.error("Error fetching listings:", error);
-//         return NextResponse.error("Internal Server Error", {status: 500});
-//     }
-// }
+}

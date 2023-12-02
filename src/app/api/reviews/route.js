@@ -3,12 +3,10 @@ import prisma from "@/lib/db";
 import { checkLoggedIn } from "@/lib/auth";
 
 
-// gets reviews by the user
-export async function GET(request)
-{   
-  const reviews = await prisma.review.findMany({
-  });
-
+// gets all reviews by the user
+export async function GET(request) {
+  // HARDCODED FOR DEMO PURPOSES.
+  const reviews = await prisma.review.findMany({});
   console.log(reviews);
 
   return NextResponse.json(reviews)

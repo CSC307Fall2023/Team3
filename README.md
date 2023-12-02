@@ -42,3 +42,6 @@ Things to try:
     * username: bob@gmail.com, password: password
 * click on the map to place a pin
 * click the "Review" button, leave a rating, and click "Submit Review"
+* open up Prisma Studio (npx prisma studio) and confirm that the review is in the Review table
+    * if the database was seeded with the -a option, your reviews will start at number 104
+    * the userId should match the id of the User that is signed in
