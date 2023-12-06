@@ -2,27 +2,27 @@ import React, { useState, useEffect } from 'react';
 
 const Sidebar = ({ listings }) => {
   const [collapsed, setCollapsed] = useState(false);
-  const [listingData, setListingData] = useState([]);
+  const [listingAddresses, setListingAddresses] = useState([]);
 
   const toggleSidebar = () => {
     setCollapsed(!collapsed);
   };
 
   useEffect(() => {
-    // Fetch addresses and avgScores based on latitude and longitude
-    const fetchListingData = async () => {
+    // Fetch addresses based on latitude and longitude
+    const fetchListingAddresses = async () => {
       try {
-        const data = await Promise.all(
+        const addresses = await Promise.all(
           listings.map(async (listing) => {
             try {
               // Create a geocoder object
               const geocoder = new window.google.maps.Geocoder();
-
+              
               // Turn coordinates into an object
               const location = new window.google.maps.LatLng(listing.latitude, listing.longitude);
 
               // Geocode the coordinates to get the address
-              const address = await new Promise((resolve, reject) => {
+              const geocodeResult = await new Promise((resolve, reject) => {
                 geocoder.geocode({ 'latLng': location }, (results, status) => {
                   if (status === window.google.maps.GeocoderStatus.OK) {
                     resolve(results[0].formatted_address);
@@ -32,22 +32,22 @@ const Sidebar = ({ listings }) => {
                 });
               });
 
-              return { address, avgScore: listing.avgScore };
+              return geocodeResult;
             } catch (error) {
               console.error("Error fetching address:", error);
-              return { address: "Address not found", avgScore: listing.avgScore };
+              return "Address not found";
             }
           })
         );
 
-        // Update the state with the fetched addresses and avgScores
-        setListingData(data);
+        // Update the state with the fetched addresses
+        setListingAddresses(addresses);
       } catch (error) {
-        console.error("Error fetching listing data:", error);
+        console.error("Error fetching listing addresses:", error);
       }
     };
 
-    fetchListingData();
+    fetchListingAddresses();
   }, [listings]); // Dependency array to run the effect when listings change
 
   return (
@@ -55,10 +55,9 @@ const Sidebar = ({ listings }) => {
       <button onClick={toggleSidebar}>{collapsed ? 'Open' : 'Hide Listings'}</button>
       {!collapsed && listings && (
         <div>
-          {listingData.map((data, index) => (
+          {listings.map((listing, index) => (
             <div key={index} className="box">
-              <p>Address: {data.address}</p>
-              <p>Average Score: {data.avgScore}</p>
+              {listingAddresses[index]}
             </div>
           ))}
         </div>
