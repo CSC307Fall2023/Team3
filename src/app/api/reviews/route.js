@@ -3,44 +3,24 @@ import prisma from "@/lib/db";
 import { checkLoggedIn } from "@/lib/auth";
 
 
-// gets reviews by the user
-// optional fields: placeId, seasonName
+// gets all reviews by the user
 export async function GET(request) {
   const loggedInData = await checkLoggedIn();
   if (!loggedInData.loggedIn) {
     return NextResponse.json({error: 'not signed in'}, {status: 403});
   }
 
-  let data;
-  var placeId, seasonName;
-  try {
-    data = await request.json();
-    var {placeId, seasonName} = data;
-  }
-  catch(error) {
-    placeId = null;
-    seasonName = null;
-  }
-
-  // convert to ids
-  const listingId = await getListingId(placeId);
-  const seasonId = await getSeasonId(seasonName);
-
   const reviews = await prisma.review.findMany({
     where: {
       userId: {
         equals: loggedInData.user?.id
-      }, 
-      // if listingId or seasonId is null, set to undefined so that the prisma query ignores it
-      listingId: listingId === null ? undefined : {
-        equals: listingId
-      },
-      seasonId: seasonId === null ? undefined : {
-        equals: seasonId
       }
     }
   });
-  return NextResponse.json(reviews);
+
+  console.log(reviews);
+
+  return NextResponse.json(reviews)
 }
 
 
@@ -107,6 +87,7 @@ async function getSeasonId(seasonName) {
 
 // request should have placeId, latitude, longitude, seasonName, and score
 // (seasonName can be the Season's name or id)
+// has the restriction of one review per user per listing per season
 export async function POST(request) {
   const loggedInData = await checkLoggedIn();
   if (!loggedInData.loggedIn) {
@@ -150,6 +131,29 @@ export async function POST(request) {
     return NextResponse.json({error: `score ${score} is not an Integer`}, {status: 500});
   }
 
+  // the backend will enforce one review per user per listing per season. 
+  // not ideal, but at this point it's easier than plunging into the frontend
+  const reviewsUpdated = await prisma.review.updateMany({
+    where: {
+      userId: {
+        equals: loggedInData.user?.id
+      }, 
+      listingId: {
+        equals: listingId
+      },
+      seasonId: {
+        equals: seasonId
+      }
+    }, 
+    data: {
+      score: score
+    }
+  });
+  if (reviewsUpdated.count > 0) {
+    return NextResponse.json(reviewsUpdated);
+  }
+
+  // if no reviews were updated, create a new review
   const review = await prisma.review.create({
     data: {
         userId: loggedInData.user?.id, 
@@ -157,7 +161,7 @@ export async function POST(request) {
         seasonId: seasonId, 
         score: score, 
     }
-  })
+  });
   return NextResponse.json(review);
 }
 

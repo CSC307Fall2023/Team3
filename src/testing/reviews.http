@@ -71,6 +71,12 @@ GET http://localhost:3000/api/reviews HTTP/1.1
 
 
 
+####  GET ALL LISTINGS (LISTINGS API)
+# EXPECTED: all listings in the table and their average scores
+GET http://localhost:3000/api/listings HTTP/1.1
+
+
+
 ####  LOG OUT
 @token = {{csrf.response.body.csrfToken}}
 POST http://localhost:3000/api/auth/signout
@@ -135,6 +141,12 @@ Content-Type: application/json
 # EXPECTED: has both reviews from this account, 
 # doesn't show the review from the other account
 GET http://localhost:3000/api/reviews HTTP/1.1
+
+
+
+####  GET ALL LISTINGS (LISTINGS API)
+# EXPECTED: all listings in the table and their average scores
+GET http://localhost:3000/api/listings HTTP/1.1
 
 
 

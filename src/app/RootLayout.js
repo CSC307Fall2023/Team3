@@ -42,6 +42,7 @@ export default function RootLayout({ children, title }) {
 
   return (
     <ThemeProvider theme={theme}>
+         { /* <div className={`${homeStyle.homeStyle} pageContainer`}> */ }
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
         <AppBar position="static"
@@ -88,6 +89,5 @@ export default function RootLayout({ children, title }) {
         {children}
       </Box>
     </ThemeProvider>
-
   );
 }

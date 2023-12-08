@@ -13,9 +13,6 @@ export default function MapWithMarker({ onMarkerPlaced }) {
         zoom: 14,
       });
 
-
-
-
       // Add click event listener to the map
       mapInstance.addListener('click', (event) => {
         // Remove the previous marker if it exists
@@ -25,8 +22,6 @@ export default function MapWithMarker({ onMarkerPlaced }) {
         // Place a new marker
         placeMarker(event.latLng, mapInstance);
       });
-
-
 
 
       setMap(mapInstance);

@@ -1,0 +1,58 @@
+/* styles.css */
+.sidebar {
+    width: 250px;
+    height: 100%;
+    position: fixed;
+    top: 50;
+    left: 0;
+    background-color: #f0f0f0;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 20px;
+    z-index: 1; /* Ensure the sidebar is above the map */
+  }
+  
+  .sidebar.collapsed {
+    width: 50px;
+  }
+  
+  .sidebar button {
+    font-size: 16px;
+    padding: 10px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    width: 100%;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .sidebar button:hover {
+    background-color: #45a049;
+  }
+  
+  .box {
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #ddd;
+    border: 1px solid #ccc;
+    text-align: center;
+  }
+
+  .map-wrapper {
+    position: relative;
+  }
+  
+  /* Adjust the map container to include a margin for the sidebar */
+  .flex-container {
+    margin-left: 250px; /* Adjust the margin to match the sidebar width */
+    position: relative;
+  }
+  
+  /* Adjust the map container when the sidebar is collapsed */
+  .flex-container.collapsed {
+    margin-left: 50px;
+  }
