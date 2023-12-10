@@ -5,10 +5,15 @@ import MapWithMarker from 'src/app/marker/page.js';
 import Link from 'next/link';
 import ChristmasSnowfall from 'src/app/snowball.js';
 import SantaSleigh from 'src/app/SantaSleigh'; 
+<<<<<<< HEAD
 import homeStyle from 'src/app/homestyle.module.css';
 import Sidebar from 'src/app/sidebar.js';
 import './styles.css';
 
+=======
+import homeStyle from 'src/app/homestyle.module.css'
+import ListingsSidebar from 'src/app/listing/page.js'
+>>>>>>> ece6403 (idk what im doing)
 const MyMapComponent = () => {
   
   const [map, setMap] = useState(null);
@@ -346,6 +351,17 @@ const MyMapComponent = () => {
           <button onClick={handleBackToHomeClick}>Back to Home</button>
       </div>
       </div>
+<<<<<<< HEAD
+=======
+      { /* </div> */ }
+      <div style={{ display: 'flex' }}>
+        {/* Your Google Map component goes here */}
+        <div id="map" style={{ flex: 1, height: '400px' }}></div>
+
+        {/* Sidebar component for listings */}
+        <ListingsSidebar />
+      </div>
+>>>>>>> ece6403 (idk what im doing)
     </>
   );
 
@@ -359,3 +375,10 @@ const MyApp = () => (
 );
 
 export default MyApp;
+
+
+// const ListingsSidebar = () => (
+
+
+
+// );
