@@ -10,9 +10,10 @@ import Sidebar from 'src/app/sidebar.js';
 import './styles.css';
 
 const MyMapComponent = () => {
+  const defaultRating = 1;
   
   const [map, setMap] = useState(null);
-  const [rating, setRating] = useState(1);
+  const [rating, setRating] = useState(defaultRating);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
   const [markerPosition, setMarkerPosition] = useState(null);
   const [markerAddress, setMarkerAddress] = useState(null);
@@ -191,7 +192,7 @@ const MyMapComponent = () => {
     // Reset component state
     setReviewSubmitted(false);
     setShowReviewForm(false);
-    setRating(0);
+    setRating(defaultRating);
 
     // Clear marker from the map
     if (markerRef.current) {
