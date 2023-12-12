@@ -12,7 +12,7 @@ import './styles.css';
 const MyMapComponent = () => {
   
   const [map, setMap] = useState(null);
-  const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(1);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
   const [markerPosition, setMarkerPosition] = useState(null);
   const [markerAddress, setMarkerAddress] = useState(null);
@@ -322,6 +322,9 @@ const MyMapComponent = () => {
       <div className={`flex-container ${sidebarCollapsed ? 'collapsed' : ''}`}>
         <Sidebar collapsed={sidebarCollapsed} listings={houseLocations} onShowMarker={showMarkerForAddress} />
         <MapWithMarker onMarkerPlaced={onMarkerPlaced} />
+        <div>{seasons.name && <p>Season: {seasons.name}</p>}
+        {markerAddress && <p>Selected Address: {markerAddress}</p>}
+        </div>
         {!showReviewForm ? (
           <button onClick={handleReviewButtonClick}>Review</button>
         ) : reviewSubmitted ? (
@@ -338,8 +341,8 @@ const MyMapComponent = () => {
                 max="10"
               />
             </label>
-            {markerAddress && <p>Selected Address: {markerAddress}</p>}
-            {seasons.name && <p>Season: {seasons.name}</p>}
+            {/* {markerAddress && <p>Selected Address: {markerAddress}</p>} */}
+            {/* {seasons.name && <p>Season: {seasons.name}</p>} */}
             <button type="submit">Submit Review</button>
             </form>
           )}
