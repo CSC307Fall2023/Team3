@@ -85,70 +85,42 @@ const MyMapComponent = () => {
   }, []); // Run only once when the component mounts
 
   useEffect(() => {
-    let latitude = 35.299878;
-    let longitude = -120.662337;
+    const initializeMap = async () => {
+      try {
+        const { latitude, longitude } = await getLocation();
+        console.log(`Current location: Latitude ${latitude}, Longitude ${longitude}`);
 
-    // get location of user
-    if (navigator.geolocation) {
-      // Browser supports geolocation
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          // Successfully retrieved the current location
-          latitude = position.coords.latitude;
-          longitude = position.coords.longitude;
-          
-          console.log(`Current location: Latitude ${latitude}, Longitude ${longitude}`);
-          
-          // Now you can use the latitude and longitude as needed
-        },
-        (error) => {
-          // Handle errors
-          switch (error.code) {
-            case error.PERMISSION_DENIED:
-              console.error("User denied the request for geolocation.");
-              break;
-            case error.POSITION_UNAVAILABLE:
-              console.error("Location information is unavailable.");
-              break;
-            case error.TIMEOUT:
-              console.error("The request to get user location timed out.");
-              break;
-            case error.UNKNOWN_ERROR:
-              console.error("An unknown error occurred.");
-              break;
-          }
+        // Make sure the Google Maps API is loaded before trying to create a map
+        if (window.google && window.google.maps) {
+          const mapInstance = new window.google.maps.Map(document.getElementById('map'), {
+            center: { lat: latitude, lng: longitude },
+            zoom: 14,
+          });
+
+          // Add click event listener to the map
+          mapInstance.addListener('click', (event) => {
+            // Remove the previous marker if it exists
+            if (markerRef.current) {
+              markerRef.current.setMap(null);
+            }
+            // Place a new marker
+            placeMarker(event.latLng, mapInstance);
+          });
+
+          setMap(mapInstance);
+
+          fetchReviews(mapInstance);
         }
-      );
-    } else {
-      // Browser doesn't support geolocation
-      console.error("Geolocation is not supported by this browser.");
-    }
-    
+      } catch (error) {
+        console.error("Error getting location:", error.message);
+        // Handle errors
+      }
+    };
 
-    // Make sure the Google Maps API is loaded before trying to create a map
-    if (window.google && window.google.maps) {
-      const mapInstance = new window.google.maps.Map(document.getElementById('map'), {
-        center: { lat: latitude, lng: longitude },
-        zoom: 14,
-      });
-
-      // Add click event listener to the map
-      mapInstance.addListener('click', (event) => {
-        // Remove the previous marker if it exists
-        if (markerRef.current) {
-          markerRef.current.setMap(null);
-        }
-        // Place a new marker
-        placeMarker(event.latLng, mapInstance);
-      });
-
-      setMap(mapInstance);
-
-      fetchReviews(mapInstance);
-    }
+    initializeMap();
   }, []);
 
-  function getLocation() {
+  const getLocation = () => {
     return new Promise((resolve, reject) => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -158,14 +130,21 @@ const MyMapComponent = () => {
             resolve({ latitude, longitude });
           },
           (error) => {
-            reject(error);
+            // Default location in case of error or permission denied
+            const defaultLocation = { latitude: 35.299878, longitude: -120.662337 };
+            console.error(`Error getting location: ${error.message}. Using default location.`);
+            resolve(defaultLocation);
           }
         );
       } else {
-        reject(new Error("Geolocation is not supported by this browser."));
+        // Browser doesn't support geolocation
+        const defaultLocation = { latitude: 35.299878, longitude: -120.662337 };
+        console.error("Geolocation is not supported by this browser. Using default location.");
+        resolve(defaultLocation);
       }
     });
-  }
+  };
+  
 
   // Function to place a marker on the map
   const placeMarker = (location, mapInstance) => {
@@ -300,6 +279,9 @@ const MyMapComponent = () => {
             lng: parseFloat(individualData.longitude),
           },
           map: mapInstance,
+          icon: {                             
+            url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"                          
+          }
         });
       });
   
