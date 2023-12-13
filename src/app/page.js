@@ -189,16 +189,18 @@ const MyMapComponent = () => {
   };
 
   const handleBackToHomeClick = () => {
-    // Reset component state
     setReviewSubmitted(false);
     setShowReviewForm(false);
-    setRating(defaultRating);
-
+    setRating(0);
+  
     // Clear marker from the map
     if (markerRef.current) {
       markerRef.current.setMap(null);
     }
+  
+    window.location.reload();
   };
+  
 
   const handleSubmit = (event) => {
     event.preventDefault();
