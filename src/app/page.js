@@ -216,19 +216,21 @@ const MyMapComponent = () => {
 
       fetch("api/reviews", {
         method: "post",
-        body: JSON.stringify({placeId: placeId, latitude: markerPosition.lat, longitude: markerPosition.lng, seasonName: seasons.name, score: rating}),
+        body: JSON.stringify({
+          placeId: placeId,
+          latitude: markerPosition.lat,
+          longitude: markerPosition.lng,
+          seasonName: seasons.name,
+          score: rating
+        }),
       }).then((response) => {
-        console.log("Sent POST request for review of", placeId);
-        console.log("post response:", response);
+        if (response.ok) {
+          setReviewSubmitted(true);
+          setShowReviewForm(false);
+        } else {
+          alert('Review submission failed. Please Login');
+        }
       });
-
-      
-
-      
-
-      // After successful submission, set reviewSubmitted to true
-      setReviewSubmitted(true);
-      setShowReviewForm(false);
     }
   };
 
