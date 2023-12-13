@@ -167,6 +167,23 @@ const MyMapComponent = () => {
     markerRef.current = newMarker;
   };
 
+  const handleLeavePinClick = () => {
+    if (map) {
+      getLocation().then(({ latitude, longitude }) => {
+        const location = new window.google.maps.LatLng(latitude, longitude);
+
+        if (markerRef.current) {
+          markerRef.current.setMap(null);
+        }
+
+        placeMarker(location, map);
+
+        // Update other state variables as needed
+        setMarkerAddress("Current Location");
+      });
+    }
+  };
+
   const placeMarkerStatic = (location, mapInstance) => {
     console.log("received location: ", location);
     new window.google.maps.Marker({
@@ -330,6 +347,7 @@ const MyMapComponent = () => {
             <button type="submit">Submit Review</button>
             </form>
           )}
+          <button onClick={handleLeavePinClick}>Pin Current Location</button>
           <button onClick={handleBackToHomeClick}>Back to Home</button>
       </div>
       </div>
