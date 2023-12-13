@@ -10,9 +10,10 @@ import Sidebar from 'src/app/sidebar.js';
 import './styles.css';
 
 const MyMapComponent = () => {
+  const defaultRating = 1;
   
   const [map, setMap] = useState(null);
-  const [rating, setRating] = useState(1);
+  const [rating, setRating] = useState(defaultRating);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
   const [markerPosition, setMarkerPosition] = useState(null);
   const [markerAddress, setMarkerAddress] = useState(null);
@@ -157,7 +158,7 @@ const MyMapComponent = () => {
     newMarker.addListener('click', () => {
       const markerPosition = newMarker.getPosition();
       getAddressFromLatLng(markerPosition).then((address) => {
-        alert(`Marker Clicked!\nAddress: ${address}`);
+       /* alert(`Marker Clicked!\nAddress: ${address}`); */
       });
     });
 
@@ -205,16 +206,18 @@ const MyMapComponent = () => {
   };
 
   const handleBackToHomeClick = () => {
-    // Reset component state
     setReviewSubmitted(false);
     setShowReviewForm(false);
     setRating(0);
-
+  
     // Clear marker from the map
     if (markerRef.current) {
       markerRef.current.setMap(null);
     }
+  
+    window.location.reload();
   };
+  
 
   const handleSubmit = (event) => {
     event.preventDefault();

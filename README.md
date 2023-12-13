@@ -40,8 +40,7 @@ Things to try:
 * log in with one of the sample accounts
     * username: alice@gmail.com, password: password
     * username: bob@gmail.com, password: password
+* click "View" for a listing in the sidebar to move the pin to that location
 * click on the map to place a pin
-* click the "Review" button, leave a rating, and click "Submit Review"
-* open up Prisma Studio (npx prisma studio) and confirm that the review is in the Review table
-    * if the database was seeded with the -a option, your reviews will start at number 104
-    * the userId should match the id of the User that is signed in
+* click the "Review" button, put in a score, and click "Submit Review"
+* scroll down in the sidebar to see the new listing and its score!
