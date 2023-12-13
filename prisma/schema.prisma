@@ -53,7 +53,7 @@ model Image {
   listingId Int
   season Season @relation(fields: [seasonId], references: [id])
   seasonId Int
-  image Bytes
+  image String
 }
 
 model Season {

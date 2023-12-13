@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const Sidebar = ({ listings }) => {
+const Sidebar = ({ listings, onShowMarker }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [listingData, setListingData] = useState([]);
 
@@ -32,7 +32,10 @@ const Sidebar = ({ listings }) => {
                 });
               });
 
-              return { address, avgScore: listing.avgScore };
+              // Round avgScore to one decimal point
+              const roundedAvgScore = parseFloat(listing.avgScore).toFixed(1);
+
+              return { address, avgScore: roundedAvgScore };
             } catch (error) {
               console.error("Error fetching address:", error);
               return { address: "Address not found", avgScore: listing.avgScore };
@@ -50,6 +53,10 @@ const Sidebar = ({ listings }) => {
     fetchListingData();
   }, [listings]); // Dependency array to run the effect when listings change
 
+  const handleViewClick = (address) => {
+    onShowMarker(address);
+  };
+
   return (
     <div className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
       <button onClick={toggleSidebar}>{collapsed ? 'Open' : 'Hide Listings'}</button>
@@ -59,6 +66,7 @@ const Sidebar = ({ listings }) => {
             <div key={index} className="box">
               <p>Address: {data.address}</p>
               <p>Average Score: {data.avgScore}</p>
+              <button onClick={() => handleViewClick(data.address)}>View</button>
             </div>
           ))}
         </div>
@@ -68,3 +76,4 @@ const Sidebar = ({ listings }) => {
 };
 
 export default Sidebar;
+

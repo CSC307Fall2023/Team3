@@ -38,3 +38,6 @@ next-env.d.ts
 
 # Google Maps API Key
 mapsAPIKey.js
+
+# prisma migration files
+prisma/migrations/

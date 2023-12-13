@@ -12,7 +12,7 @@ import './styles.css';
 const MyMapComponent = () => {
   
   const [map, setMap] = useState(null);
-  const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(1);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
   const [markerPosition, setMarkerPosition] = useState(null);
   const [markerAddress, setMarkerAddress] = useState(null);
@@ -22,7 +22,30 @@ const MyMapComponent = () => {
   const [showSnowballs, setShowSnowballs] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [houseLocations, setHouseLocations] = useState([]);
-  
+
+  const showMarkerForAddress = (address) => {
+    if (map) {
+      // Create a geocoder object
+      const geocoder = new window.google.maps.Geocoder();
+
+      // Geocode the address to get coordinates
+      geocoder.geocode({ address: address }, (results, status) => {
+        if (status === 'OK' && results[0] && results[0].geometry && results[0].geometry.location) {
+          const location = results[0].geometry.location;
+
+          // Remove the previous marker if it exists
+          if (markerRef.current) {
+            markerRef.current.setMap(null);
+          }
+
+          // Place a new marker
+          placeMarker(location, map);
+        } else {
+          console.error('Geocoder failed or no results found for the address:', address);
+        }
+      });
+    }
+  };
 
   const toggleSidebar = () => {
     setSidebarCollapsed((prevCollapsed) => !prevCollapsed);
@@ -62,26 +85,66 @@ const MyMapComponent = () => {
   }, []); // Run only once when the component mounts
 
   useEffect(() => {
-    // Make sure the Google Maps API is loaded before trying to create a map
-    if (window.google && window.google.maps) {
-      const mapInstance = new window.google.maps.Map(document.getElementById('map'), {
-        center: { lat: 35.299878, lng: -120.662337 },
-        zoom: 14,
-      });
+    const initializeMap = async () => {
+      try {
+        const { latitude, longitude } = await getLocation();
+        console.log(`Current location: Latitude ${latitude}, Longitude ${longitude}`);
 
-      // Add click event listener to the map
-      mapInstance.addListener('click', (event) => {
-        // Remove the previous marker if it exists
-        if (markerRef.current) {
-          markerRef.current.setMap(null);
+        // Make sure the Google Maps API is loaded before trying to create a map
+        if (window.google && window.google.maps) {
+          const mapInstance = new window.google.maps.Map(document.getElementById('map'), {
+            center: { lat: latitude, lng: longitude },
+            zoom: 14,
+          });
+
+          // Add click event listener to the map
+          mapInstance.addListener('click', (event) => {
+            // Remove the previous marker if it exists
+            if (markerRef.current) {
+              markerRef.current.setMap(null);
+            }
+            // Place a new marker
+            placeMarker(event.latLng, mapInstance);
+          });
+
+          setMap(mapInstance);
+
+          fetchReviews(mapInstance);
         }
-        // Place a new marker
-        placeMarker(event.latLng, mapInstance);
-      });
+      } catch (error) {
+        console.error("Error getting location:", error.message);
+        // Handle errors
+      }
+    };
 
-      setMap(mapInstance);
-    }
+    initializeMap();
   }, []);
+
+  const getLocation = () => {
+    return new Promise((resolve, reject) => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            resolve({ latitude, longitude });
+          },
+          (error) => {
+            // Default location in case of error or permission denied
+            const defaultLocation = { latitude: 35.299878, longitude: -120.662337 };
+            console.error(`Error getting location: ${error.message}. Using default location.`);
+            resolve(defaultLocation);
+          }
+        );
+      } else {
+        // Browser doesn't support geolocation
+        const defaultLocation = { latitude: 35.299878, longitude: -120.662337 };
+        console.error("Geolocation is not supported by this browser. Using default location.");
+        resolve(defaultLocation);
+      }
+    });
+  };
+  
 
   // Function to place a marker on the map
   const placeMarker = (location, mapInstance) => {
@@ -153,19 +216,21 @@ const MyMapComponent = () => {
 
       fetch("api/reviews", {
         method: "post",
-        body: JSON.stringify({placeId: placeId, latitude: markerPosition.lat, longitude: markerPosition.lng, seasonName: seasons.name, score: rating}),
+        body: JSON.stringify({
+          placeId: placeId,
+          latitude: markerPosition.lat,
+          longitude: markerPosition.lng,
+          seasonName: seasons.name,
+          score: rating
+        }),
       }).then((response) => {
-        console.log("Sent POST request for review of", placeId);
-        console.log("post response:", response);
+        if (response.ok) {
+          setReviewSubmitted(true);
+          setShowReviewForm(false);
+        } else {
+          alert('Review submission failed. Please Login');
+        }
       });
-
-      
-
-      
-
-      // After successful submission, set reviewSubmitted to true
-      setReviewSubmitted(true);
-      setShowReviewForm(false);
     }
   };
 
@@ -200,73 +265,36 @@ const MyMapComponent = () => {
 
   const fetchReviews = async (mapInstance) => {
     try {
-      // Fetch reviews
-      const response = await fetch("api/reviews", { method: "get" });
-  
-      if (!response.ok) {
-        throw new Error(`Failed to fetch reviews. Status: ${response.status}`);
-      }
-  
-      const data = await response.json();
-      console.log("Fetched reviews data:", data);
-  
-      // Store longitude and latitude information for each item
-      
-  
       // Fetch individual data for each listing ID
-      for (const item of data) {
-        const individualResponse = await fetch(`api/listings/${item.listingId}`, { method: "get" });
+      const individualResponse = await fetch(`api/listings`, { method: "get" });
   
-        if (!individualResponse.ok) {
-          console.error(`Failed to fetch data for item with ID ${item.listingId}. Status: ${individualResponse.status}`);
-          continue; // Skip to the next iteration in case of an error
-        }
-  
-        const individualData = await individualResponse.json();
-        console.log(`Fetched data for item with ID ${item.listingId}:`, individualData);
-        
-        console.log("lat: ", individualData.latitude, "lng: ", individualData.longitude);
+      const data = await individualResponse.json();
+      console.log("Fetched data:", data);
 
-        const marker = new google.maps.Marker({
+      // Assuming data is an array of objects with latitude and longitude properties
+      data.forEach((individualData) => {
+        console.log(`Fetched data:`, individualData);
+
+        new google.maps.Marker({
           position: {
             lat: parseFloat(individualData.latitude),
             lng: parseFloat(individualData.longitude),
           },
           map: mapInstance,
-          // icon: {
-          //   url: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png', // URL to a blue marker icon
-          // },
+          icon: {                             
+            url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"                          
+          }
         });
-      }
+      });
   
-      // Do something with the locations array, for example:
-      console.log("Stored locations:", locations);
     } catch (error) {
       console.error("Error fetching reviews:", error);
     }
   };
 
   useEffect(() => {
-    // Make sure the Google Maps API is loaded before trying to create a map
-      const mapInstance = new window.google.maps.Map(document.getElementById('map'), {
-        center: { lat: 35.299878, lng: -120.662337 },
-        zoom: 14,
-      });
-
-      // Add click event listener to the map
-      mapInstance.addListener('click', (event) => {
-        // Remove the previous marker if it exists
-        if (markerRef.current) {
-          markerRef.current.setMap(null);
-        }
-        // Place a new marker
-        placeMarker(event.latLng, mapInstance);
-      });
-
-      setMap(mapInstance);
-
     fetchSeasonsAndPopulateSelect();
-    fetchReviews(mapInstance);
+    //fetchReviews(mapInstance);
   }, []);
 
   return (
@@ -276,8 +304,11 @@ const MyMapComponent = () => {
       <button onClick={toggleSnowballs}>{showSnowballs ? 'Hide Snowballs' : 'Show Snowballs'}</button>
       <h1>{reviewSubmitted ? 'Review Submitted!' : 'Find or Pin a Location!'}</h1>
       <div className={`flex-container ${sidebarCollapsed ? 'collapsed' : ''}`}>
-        <Sidebar collapsed={sidebarCollapsed} listings={houseLocations} />
+        <Sidebar collapsed={sidebarCollapsed} listings={houseLocations} onShowMarker={showMarkerForAddress} />
         <MapWithMarker onMarkerPlaced={onMarkerPlaced} />
+        <div>{seasons.name && <p>Season: {seasons.name}</p>}
+        {markerAddress && <p>Selected Address: {markerAddress}</p>}
+        </div>
         {!showReviewForm ? (
           <button onClick={handleReviewButtonClick}>Review</button>
         ) : reviewSubmitted ? (
@@ -294,8 +325,8 @@ const MyMapComponent = () => {
                 max="10"
               />
             </label>
-            {markerAddress && <p>Selected Address: {markerAddress}</p>}
-            {seasons.name && <p>Season: {seasons.name}</p>}
+            {/* {markerAddress && <p>Selected Address: {markerAddress}</p>} */}
+            {/* {seasons.name && <p>Season: {seasons.name}</p>} */}
             <button type="submit">Submit Review</button>
             </form>
           )}
