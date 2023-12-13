@@ -158,7 +158,7 @@ const MyMapComponent = () => {
     newMarker.addListener('click', () => {
       const markerPosition = newMarker.getPosition();
       getAddressFromLatLng(markerPosition).then((address) => {
-        alert(`Marker Clicked!\nAddress: ${address}`);
+        //alert(`Marker Clicked!\nAddress: ${address}`);
       });
     });
 
