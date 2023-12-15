@@ -22,11 +22,11 @@ The file should contain:
 NEXT_PUBLIC_MAPS_KEY="YOUR_API_KEY_HERE"
 NEXT_PUBLIC_ETERNAL_SEASON="Christmas 2023"
 ```
-Replace "YOUR_API_KEY_HERE" with a Google Maps API key (email superjoeyd123@gmail.com to ask for Joe's key).
+Replace "YOUR_API_KEY_HERE" with a Google Maps API key (use your preferred method to contact Joe, such as emailing superjoeyd123@gmail.com, to ask for Joe's key).
 
 Initialize the database.
 ```bash
-node db_seeding/seed.js -a
+node db_seeding/seed.js
 ```
 
 Run the development server.
@@ -37,10 +37,12 @@ npm run dev
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 Things to try:
-* log in with one of the sample accounts
+* click on the map to place a pin
+* run ```node db_seeding/seed.js -a``` and then refresh the page to put some example pins on the map (near Cal Poly SLO)
+* click "View" for a listing in the sidebar to move the pin to that location
+* sign up or log in with one of the sample accounts
     * username: alice@gmail.com, password: password
     * username: bob@gmail.com, password: password
-* click "View" for a listing in the sidebar to move the pin to that location
-* click on the map to place a pin
+* optional: click the "Pin Current Location" button and allow the app to put a pin at your current location
 * click the "Review" button, put in a score, and click "Submit Review"
-* scroll down in the sidebar to see the new listing and its score!
+* refresh the page and scroll down in the sidebar to see the new listing and its score!
