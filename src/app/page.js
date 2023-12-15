@@ -10,6 +10,7 @@ import Sidebar from 'src/app/sidebar.js';
 import './styles.css';
 
 const MyMapComponent = () => {
+  const defaultRating = 1;
   
   const [map, setMap] = useState(null);
   const [rating, setRating] = useState(1);
@@ -157,7 +158,7 @@ const MyMapComponent = () => {
     newMarker.addListener('click', () => {
       const markerPosition = newMarker.getPosition();
       getAddressFromLatLng(markerPosition).then((address) => {
-        alert(`Marker Clicked!\nAddress: ${address}`);
+        //alert(`Marker Clicked!\nAddress: ${address}`);
       });
     });
 
@@ -165,6 +166,23 @@ const MyMapComponent = () => {
     onMarkerPlaced(newMarker.getPosition().toJSON());
     // Update the marker ref
     markerRef.current = newMarker;
+  };
+
+  const handleLeavePinClick = () => {
+    if (map) {
+      getLocation().then(({ latitude, longitude }) => {
+        const location = new window.google.maps.LatLng(latitude, longitude);
+
+        if (markerRef.current) {
+          markerRef.current.setMap(null);
+        }
+
+        placeMarker(location, map);
+
+        // Update other state variables as needed
+        setMarkerAddress("Current Location");
+      });
+    }
   };
 
   const placeMarkerStatic = (location, mapInstance) => {
@@ -197,7 +215,10 @@ const MyMapComponent = () => {
     if (markerRef.current) {
       markerRef.current.setMap(null);
     }
+
+    window.location.reload();
   };
+  
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -330,6 +351,7 @@ const MyMapComponent = () => {
             <button type="submit">Submit Review</button>
             </form>
           )}
+          <button onClick={handleLeavePinClick}>Pin Current Location</button>
           <button onClick={handleBackToHomeClick}>Back to Home</button>
       </div>
       </div>
